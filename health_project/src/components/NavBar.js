@@ -77,6 +77,16 @@ const NavBar = () => {
                       User Data
                     </NavLink>
                   </NavItem>
+                  <NavItem>
+        <NavLink
+          tag={RouterNavLink}
+          to="/wizard"
+          exact
+          activeClassName="router-link-exact-active"
+        >
+          Formulaire
+        </NavLink>
+      </NavItem>
                 </>
               )}
             </Nav>
