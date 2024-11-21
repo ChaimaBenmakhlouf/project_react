@@ -8,6 +8,7 @@ import Profile from "./views/Profile";
 import ExternalApi from "./views/ExternalApi";
 import UserData from "./views/UserData";
 import { useAuth0 } from "@auth0/auth0-react";
+import Wizard from "./components/Wizard";
 import history from "./utils/history";
 
 const App = () => {
@@ -48,6 +49,7 @@ const App = () => {
             <Route path="/profile" component={Profile} />
             <Route path="/external-api" component={ExternalApi} />
             <Route path="/user-data" component={UserData} /> 
+            <Route path="/wizard" component={Wizard} />
           </Switch>
         </Container>
         <Footer />
