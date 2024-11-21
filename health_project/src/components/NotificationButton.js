@@ -1,7 +1,7 @@
 ﻿import React, { useState } from 'react';
 import { useAuth0 } from "@auth0/auth0-react";
 
-const publicVapidKey = 'BOb3wLZU9LkI4s0le38GSF26ItYtASTBEq1ZGy_3eP4SICVZNYSINcG1PLMirb3IToJ2KBs_mgr3ICO2DRk8Ajs';
+const publicVapidKey = 'BB9IZJNsWEuqAcQ9SBVhD2kchQ3cTkc9Ze6uKltb3sNANaCbRtQI7HFnk6j1IHCklCRVfPjPa_Ih9fF__R3C-RM';
 
 const NotificationButton = () => {
   const [isSubscribed, setIsSubscribed] = useState(false);

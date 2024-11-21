@@ -39,4 +39,22 @@ root.render(
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+//serviceWorker.unregister();
+
+if ('serviceWorker' in navigator) {
+  // Nettoyage manuel des anciens SW potentiellement bloqués
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    registrations.forEach(registration => {
+      registration.unregister();
+    });
+  }).then(() => {
+    // Réessayer l'enregistrement après le nettoyage
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        console.log('Service Worker enregistré avec succès:', registration.scope);
+      })
+      .catch(error => {
+        console.error('Erreur lors de l\'enregistrement du Service Worker:', error);
+      });
+  });
+}

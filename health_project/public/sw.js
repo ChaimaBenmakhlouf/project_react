@@ -1,41 +1,53 @@
 ﻿console.log('Service worker activé');
 
-// Gérer l'événement `push`
-self.addEventListener('push', (event) => {
-  console.log('Push reçu:', event.data ? event.data.text() : 'Pas de données');
-  const data = event.data ? event.data.json() : {};
+// Écouteur pour l'événement "push"
+self.addEventListener('push', event => {
+  console.log('Événement push reçu');
 
-  const options = {
-    body: data.notification.body || 'Notification sans contenu',
-    icon: data.notification.icon || '/icon.png',
-    vibrate: [200, 100, 200],
-    badge: '/badge.png',
-    actions: data.notification.actions || [],
-    data: data.notification.data || {}
+  const handlePush = async () => {
+    // Vérifie si un payload (données) est reçu dans la notification
+    if (event.data) {
+      const payload = event.data.json();
+      console.log('Payload reçu:', payload);
+
+      // Options pour afficher la notification
+      const options = {
+        body: payload.notification.body || 'Message par défaut',
+        icon: payload.notification.icon || 'assets/icons/icon-384x384.png', // Chemin vers ton icône
+        badge: payload.notification.badge || 'assets/icons/badge-128x128.png', // Badge de notification
+        data: payload.notification.data || {}, // Données associées à la notification
+        vibrate: [200, 100, 200], // Exemple de vibration
+        actions: payload.notification.actions || [], // Boutons d'action
+      };
+
+      // Affiche la notification
+      return self.registration.showNotification(
+        payload.notification.title || 'Notification',
+        options
+      );
+    } else {
+      console.error('Pas de données dans l\'événement push');
+    }
   };
 
+  // Gère les erreurs si quelque chose tourne mal
   event.waitUntil(
-    self.registration.showNotification(data.notification.title || 'Titre manquant', options)
+    handlePush().catch(error => console.error('Erreur dans handlePush:', error))
   );
 });
 
-// Gérer les clics sur la notification
-self.addEventListener('notificationclick', (event) => {
-  console.log('Notification cliquée:', event.notification);
-  event.notification.close();
+// Écouteur pour gérer les clics sur les notifications
+self.addEventListener('notificationclick', event => {
+  console.log('Notification cliquée:', event);
 
-  // Gestion de l'action ou navigation vers une URL
-  const url = event.notification.data.url || '/';
-  event.waitUntil(
-    clients.matchAll({ type: 'window' }).then((clientList) => {
-      for (let client of clientList) {
-        if (client.url === url && 'focus' in client) {
-          return client.focus();
-        }
-      }
-      if (clients.openWindow) {
-        return clients.openWindow(url);
-      }
-    })
-  );
+  const notification = event.notification;
+  const action = event.action;
+
+  if (notification.data && notification.data.url) {
+    event.waitUntil(
+      clients.openWindow(notification.data.url)
+    );
+  }
+
+  notification.close();
 });

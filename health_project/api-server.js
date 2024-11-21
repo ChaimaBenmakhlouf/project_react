@@ -6,6 +6,7 @@ const { auth } = require("express-oauth2-jwt-bearer");
 const authConfig = require("./src/auth_config.json");
 const db = require('./src/db'); 
 const { v4: uuidv4 } = require('uuid');
+const webpush = require('web-push');
 const app = express();
 
 const port = process.env.API_PORT || 3001;
@@ -133,6 +134,49 @@ app.get("/api/notifications/:userId", checkJwt, (req, res) => {
     }
   });
 });
+
+app.post('/api/subscribe',checkJwt, (req, res) => {
+  console.log('webpushtoken',req.body);
+  const userId = req.auth.payload.sub;
+  console.log('id user',userId);
+  webpush.setVapidDetails(
+    'mailto: <test1@gmail.com',
+    'BB9IZJNsWEuqAcQ9SBVhD2kchQ3cTkc9Ze6uKltb3sNANaCbRtQI7HFnk6j1IHCklCRVfPjPa_Ih9fF__R3C-RM',
+    'xyb4BHCyPFt6Qei8tLbB0_dgC3zYVxz3XOuAsromrzw'
+  );
+
+  //Angular format for webppush
+  const payload = {
+    notification: {
+        title: 'Ma notification d\'exemple',
+        body: 'Voici le corps de ma notification',
+        icon: 'assets/icons/icon-384x384.png',
+        actions: [
+            { action: 'bar', title: 'Action custom' },
+            { action: 'baz', title: 'Une autre action' },
+        ],
+        data: {
+            onActionClick: {
+                default: { operation: 'openWindow',url: "http://localhost:4200/notifications" },
+                bar: {
+                    operation: 'focusLastFocusedOrOpen',
+                    url: '/signin',
+                },
+                baz: {
+                    operation: 'navigateLastFocusedOrOpen',
+                    url: '/signin',
+                },
+            },
+        },
+    },
+};
+  webpush.sendNotification(req.body, JSON.stringify(payload));
+// We will be coding here
+
+});
+
+
+
 
 
 app.listen(port, () => console.log(`API Server listening on port ${port}`));
